@@ -1,6 +1,8 @@
 package com.azim.sharedprefdemo
 
+import android.app.backup.BackupManager
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -11,10 +13,14 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     // Declare constant / the key where our data will be saved
     private final val SAVED = "saved"
+    private var backupManager : BackupManager? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        backupManager = BackupManager(this)
 
         binding.readDataBtn.isEnabled = false
 
@@ -42,7 +48,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun savePreference(value:String) {
         // Retrieve the share with mode private, only accessible in this app
-        val sharedPreferences = getPreferences(MODE_PRIVATE)
+        val sharedPreferences =
+            getSharedPreferences(BackupData.PREFS_TEST, MODE_PRIVATE)
         // Enter the edit mode of shared preference
         val editor = sharedPreferences.edit();
 
@@ -53,10 +60,14 @@ class MainActivity : AppCompatActivity() {
         editor.putString(SAVED,value);
         // save the data
         editor.commit()
+
+        Log.d("Debug","Calling backup Manager!!")
+        backupManager?.dataChanged()
     }
 
     private fun loadPreference():String{
-        val sharedPreferences = getPreferences(MODE_PRIVATE)
+        val sharedPreferences =
+            getSharedPreferences(BackupData.PREFS_TEST, MODE_PRIVATE)
         val saveData = sharedPreferences.getString(SAVED,"")
         return saveData!!
     }
