@@ -18,6 +18,13 @@ class MainActivity : AppCompatActivity() {
 
         binding.readDataBtn.isEnabled = false
 
+        var savedData = loadPreference()
+        if (savedData != "") {
+            binding.readDataEditText.setText(savedData)
+        } else {
+            binding.readDataBtn.isEnabled = false
+        }
+
         binding.saveDataBtn.setOnClickListener {
             if (binding.saveDataEditText.text.toString() != ""){
                 savePreference(binding.saveDataEditText.text.toString())
